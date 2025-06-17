@@ -6,7 +6,7 @@ import OrderHistory from '../pages/OrderHistory.vue'
 const routes = [
   { path: '/', component: ProductList },
   { path: '/order', component: OrderForm },
-  { path: '/history', component: OrderHistory }
+  { path: '/history', component: OrderHistory },
 ]
 
 const router = createRouter({

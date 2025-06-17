@@ -1,72 +1,82 @@
 <template>
   <div class="container mt-4">
-    <div class="row">
-      <div
-        class="col-md-3 mb-4"
-        v-for="product in store.products"
-        :key="product.id"
-      >
-        <div class="card h-100">
-          <img
-            src="https://via.placeholder.com/250x200.png?text=Product+Image"
-            class="card-img-top"
-            alt="product.name"
-          />
-          <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text">Supplier ID: {{ product.supplier }}</p>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">Rs. {{ product.price }}</li>
-            <li class="list-group-item">
-              Stock: {{ getStock(product.id) }} units
-            </li>
-          </ul>
-          <div class="card-body text-center">
-            <button class="btn btn-primary" @click="placeOrder(product.id)">
-              Place Order
-            </button>
-          </div>
-        </div>
-      </div>
+    <h2>📦 Product List</h2>
+
+    <form @submit.prevent="handleAddProduct" class="mb-3">
+      <input v-model="newProduct.name" placeholder="Product Name" required />
+      <input v-model.number="newProduct.price" placeholder="Price" required />
+      <input v-model.number="newProduct.supplier" placeholder="Supplier ID" required />
+      <button class="btn btn-success btn-sm">➕ Add</button>
+    </form>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Supplier</th>
+          <th>Stock</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="product in store.products" :key="product.id">
+          <td>{{ product.name }}</td>
+          <td>{{ product.price }}</td>
+          <td>{{ product.supplier }}</td>
+          <td>-- (To be linked)</td>
+          <td>
+            <button class="btn btn-danger btn-sm" @click="store.deleteProduct(product.id)">🗑 Delete</button>
+            <!-- Edit Option -->
+            <button class="btn btn-warning btn-sm" @click="startEdit(product)">✏ Edit</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div v-if="editingProduct">
+      <h4>Edit Product</h4>
+      <form @submit.prevent="handleUpdateProduct">
+        <input v-model="editingProduct.name" required />
+        <input v-model.number="editingProduct.price" required />
+        <input v-model.number="editingProduct.supplier" required />
+        <button class="btn btn-primary btn-sm">✔ Save</button>
+        <button class="btn btn-secondary btn-sm" @click="editingProduct = null">❌ Cancel</button>
+      </form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useProductStore } from '../stores/productStore'
-import { api } from '../api'
 
 const store = useProductStore()
-const stocks = ref([])
+const newProduct = ref({ name: '', price: 0, supplier: 1 })
+const editingProduct = ref(null)
 
-onMounted(async () => {
-  await store.fetchProducts()
-  const res = await api.get('stocks/')
-  stocks.value = res.data
-})
+onMounted(() => store.fetchProducts())
 
-const getStock = (productId) => {
-  const stock = stocks.value.find((s) => s.product === productId)
-  return stock ? stock.quantity : 'N/A'
+const handleAddProduct = () => {
+  store.addProduct(newProduct.value)
+  newProduct.value = { name: '', price: 0, supplier: 1 }
 }
 
-const placeOrder = async (productId) => {
-  try {
-    await api.post('orders/', {
-      items: [{ product: productId, quantity: 1 }],
-    })
-    alert('✅ Order placed successfully!')
-  } catch (err) {
-    alert('❌ Failed to place order: ' + err.message)
-  }
+const startEdit = (product) => {
+  editingProduct.value = { ...product }
+}
+
+const handleUpdateProduct = () => {
+  store.updateProduct(editingProduct.value.id, editingProduct.value)
+  editingProduct.value = null
 }
 </script>
 
-<style>
-.card-img-top {
-  object-fit: cover;
-  height: 200px;
+<style scoped>
+table {
+  width: 100%;
+}
+input {
+  margin-right: 8px;
 }
 </style>

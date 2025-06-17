@@ -1,54 +1,26 @@
 <template>
-  <div>
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
-      <div class="container-fluid">
-        <RouterLink class="navbar-brand" to="/">🛠️ ERP Dashboard</RouterLink>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/">Products</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/order">Place Order</RouterLink>
-            </li>
-            <li class="nav-item">
-              <RouterLink class="nav-link" to="/history">Order History</RouterLink>
-            </li>
-          </ul>
-        </div>
-      </div>
+  <div id="app">
+    <nav>
+      <router-link to="/">Products</router-link> |
+      <router-link to="/order">Place Order</router-link> |
+      <router-link to="/history">Order History</router-link>
     </nav>
-
-    <!-- Route Content -->
-    <div class="container mt-4">
-      <RouterView />
-    </div>
+    <router-view />
   </div>
 </template>
 
-<script setup>
-// No script needed here for now
+<script>
+export default {
+  name: 'App'
+}
 </script>
 
-<style>
-@import "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css";
-
-body {
-  background-color: #f8f9fa;
-  font-family: "Segoe UI", sans-serif;
+<style scoped>
+nav {
+  padding: 1rem;
+  background-color: #f0f0f0;
 }
-
-.navbar-brand {
-  font-weight: bold;
+nav a {
+  margin: 0 10px;
 }
 </style>
